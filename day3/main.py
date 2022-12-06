@@ -3,16 +3,6 @@ file = open('data.txt')
 
 lines = file.readlines()
 
-res = []
-for line in lines:
-    compartment_1 = line[0:round(len(line) / 2)]
-    compartment_2 = line[round(len(line) / 2):]
-    current = []
-    for x in compartment_1:
-        if compartment_2.find(x) != -1:
-            current.append(x)
-    res = [*res, *set(current)]
-
 def calc(char):
     pointer = 1
     if char.isupper():
@@ -20,4 +10,34 @@ def calc(char):
 
     return string.ascii_lowercase.index(char.lower()) + pointer
 
-print(sum([calc(x) for x in res]))
+def checker(res, compartments: list):
+    for x in compartments[0]:
+        if any([compartment.find(x) >= 0 for compartment in compartments[1:]]):
+            res.append(calc(x))
+            break
+    return res
+
+# Part 1
+res = []
+for line in lines:
+    compartment_1 = line[:int(len(line) / 2)]
+    compartment_2 = line[int(len(line) / 2):]
+    res = checker(res, [compartment_1, compartment_2])
+
+print(sum(res))
+
+# Part 2
+res = []
+i = 1
+chunk = []
+for line in lines:
+    chunk.append(line.split()[0])
+    if i % 3 == 0:
+        badge = ''.join(set(chunk[0]).intersection(chunk[1]).intersection(chunk[2]))
+        print(badge)
+        res.append(calc(badge))
+        chunk = []
+    i += 1
+
+
+print(sum(res))
